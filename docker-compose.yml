@@ -1,0 +1,64 @@
+version: '3.4'
+
+services:
+  weapp:
+    image: weapp:latest
+    restart: always
+    #ports:
+    #  - 8080:80
+    environment:
+      WEAPP_CONFIG: '{"app":{"displayErrorDetails":true},"we_work":{"corp_id":"tAp1uR7w8T8L1yaeLT","apps":{"1000003":{"name":"appname","agentid":1000003,"secret":"i-rqQmNEYsU3kx2bvZRD4q20OQUnRwkhqiTs7G-xO3c"},"1000002":{"name":"appname","agentid":1000002,"secret":"i-rqQmNEYsU3kx2bvZRD4q20OQUnRwkhqiTs7G-xO3c"}},"department":{"secret":"i-rqQmNEYsU3kx2bvZRD4q20OQUnRwkhqiTs7G-xO3c"},"response_type":"array","log":{"level":"error","file":"/tmp/wechat.log"}}}'
+      PHP_FPM_CLEAR_ENV: 'no'
+    volumes:
+      - weapp_root:/var/www/html
+    networks:
+      - weapp
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.host==hostname
+      restart_policy:
+        condition: on-failure
+
+  nginx:
+    image: wodby/nginx:1.14
+    depends_on:
+      - weapp_weapp
+    environment:
+      NGINX_STATIC_OPEN_FILE_CACHE: "off"
+      NGINX_ERROR_LOG_LEVEL: debug
+      NGINX_BACKEND_HOST: weapp_weapp
+      NGINX_SERVER_ROOT: /var/www/html/public
+      NGINX_VHOST_PRESET: php
+      NGINX_FASTCGI_INDEX: index.php
+      NGINX_SERVER_NAME: example.com
+
+#      NGINX_DRUPAL_FILE_PROXY_URL: http://example.com
+    volumes:
+      - weapp_root:/var/www/html
+# For macOS users (https://wodby.com/stacks/drupal/docs/local/docker-for-mac/)
+#      - ./:/var/www/html:cached # User-guided caching
+#      - docker-sync:/var/www/html # Docker-sync
+    networks:
+      - weapp
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+        - node.labels.host==hostname
+      restart_policy:
+        condition: on-failure
+      labels:
+        - 'traefik.backend=weapp_nginx'
+        - "traefik.enable=true"
+        - 'traefik.port=80'
+        - 'traefik.frontend.rule=Host:example.com'
+volumes:
+  weapp_root:
+networks:
+  weapp:
+    external:
+      name: weapp_default
