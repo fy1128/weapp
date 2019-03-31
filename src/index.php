@@ -78,8 +78,11 @@ class WEAPP
                 }
 
                 if ($msg_arr = json_decode($msg, true)) {
-                    $message = new Raw($msg);
-                    $messageSent[] = $this->work->messenger->message($message)->send();
+                    // Beware, json_decode will return true for any number also.
+                    if ($msg_arr != $msg) {
+                        $message = new Raw($msg);
+                        $messageSent[] = $this->work->messenger->message($message)->send();
+                    }
                 } else {
                     $message = new Text($msg);
                     //$msg = str_replace('\n', "\n", $msg);
