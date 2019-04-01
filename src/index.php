@@ -37,9 +37,20 @@ class WEAPP
                         //var_dump($parsedBody);
                         $agentid = $parsedBody['agentid'];
                         $msg = $parsedBody['msg'];
+
+                        // type accept: user, depart
+                        $type = $parsedBody['type'];
+                        if (!empty($type)) {
+                            $typeid = $parsedBody['typeid'];
+                        }
+
                 } else {
                     $agentid = $request->getAttribute('agentid');
                     $msg = $request->getAttribute('msg');
+
+                    if ($type = $request->getAttribute('type')) {
+                        $typeid = $request->getAttribute('typeid');
+                    }
                 }
                 if (!$msg = base64_decode($msg, true)) {
                     throw new InvalidArgumentException('Invalid message.');
@@ -48,10 +59,6 @@ class WEAPP
                 // https://stackoverflow.com/questions/1671785/in-php-whats-the-diff-between-stripcslashes-and-stripslashes
                 $msg = stripcslashes(urldecode($msg));
                 $messageSent = [];
-                // type accept: user, depart
-                if ($type = $request->getAttribute('type')) {
-                    $typeid = $request->getAttribute('typeid');
-                }
                 
                 $this->weApp->updateWeWork('app', $agentid);
 
