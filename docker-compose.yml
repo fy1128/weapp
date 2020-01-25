@@ -7,7 +7,7 @@ services:
     #ports:
     #  - 8080:80
     environment:
-      WEAPP_CONFIG: '{"app":{"displayErrorDetails":true},"we_work":{"corp_id":"tAp1uR7w8T8L1yaeLT","apps":{"1000003":{"name":"appname","agentid":1000003,"secret":"i-rqQmNEYsU3kx2bvZRD4q20OQUnRwkhqiTs7G-xO3c"},"1000002":{"name":"appname","agentid":1000002,"secret":"i-rqQmNEYsU3kx2bvZRD4q20OQUnRwkhqiTs7G-xO3c"}},"department":{"secret":"i-rqQmNEYsU3kx2bvZRD4q20OQUnRwkhqiTs7G-xO3c"},"response_type":"array","log":{"level":"error","file":"/tmp/wechat.log"}}}'
+      WEAPP_CONFIG: '{"error_handler_middleware":{"display_error_details":true,"log_errors":true,"log_error_details":true},"we_work":{"corp_id":"tAp1uR7w8T8L1yaeLT","apps":{"1000003":{"name":"appname","agentid":1000003,"secret":"i-rqQmNEYsU3kx2bvZRD4q20OQUnRwkhqiTs7G-xO3c"},"1000002":{"name":"appname","agentid":1000002,"secret":"i-rqQmNEYsU3kx2bvZRD4q20OQUnRwkhqiTs7G-xO3c"}},"department":{"secret":"i-rqQmNEYsU3kx2bvZRD4q20OQUnRwkhqiTs7G-xO3c"},"response_type":"array","log":{"level":"error","file":"/tmp/wechat.log"}}}'
       PHP_FPM_CLEAR_ENV: 'no'
     volumes:
       - weapp_root:/var/www/html
