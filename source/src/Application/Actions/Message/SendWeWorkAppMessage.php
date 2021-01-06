@@ -42,9 +42,9 @@ class SendWeWorkAppMessage
                 $typeid = $request->getAttribute('typeid');
             }
         }
-        if ($msg_decode = base64_decode($msg, true)) {
-            $msg = $msg_decode;
-        };
+        if ($this->isBase64Encoded($msg)) {
+            $msg = base64_decode($msg, true);
+        }
 
         // https://stackoverflow.com/questions/1671785/in-php-whats-the-diff-between-stripcslashes-and-stripslashes
         $msg = stripcslashes(urldecode($msg));
@@ -81,7 +81,7 @@ class SendWeWorkAppMessage
         } else {
             $message = new Text($msg);
             //$msg = str_replace('\n', "\n", $msg);
-            $messageSent[] = $weWork->messenger->message($msg)->send();
+            $messageSent[] = $weWork->messenger->message($message)->send();
         }
         
         // append media message
@@ -94,6 +94,22 @@ class SendWeWorkAppMessage
 
         return $response->withJSON($messageSent, 200, JSON_UNESCAPED_UNICODE);
 
+    }
+
+    private function isBase64Encoded(string $s) : bool
+    {
+        if ((bool) preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $s) === false) {
+            return false;
+        }
+        $decoded = base64_decode($s, true);
+        if ($decoded === false) {
+            return false;
+        }
+        $encoding = mb_detect_encoding($decoded);
+        if (! in_array($encoding, ['UTF-8', 'ASCII'], true)) {
+            return false;
+        }
+        return $decoded !== false && base64_encode($decoded) === $s;
     }
 
 }
