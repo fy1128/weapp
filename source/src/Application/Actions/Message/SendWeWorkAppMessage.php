@@ -42,8 +42,8 @@ class SendWeWorkAppMessage
                 $typeid = $request->getAttribute('typeid');
             }
         }
-        if (!$msg = base64_decode($msg, true)) {
-            throw new InvalidArgumentException('Invalid message.');
+        if ($msg_decode = base64_decode($msg, true)) {
+            $msg = $msg_decode;
         };
 
         // https://stackoverflow.com/questions/1671785/in-php-whats-the-diff-between-stripcslashes-and-stripslashes
